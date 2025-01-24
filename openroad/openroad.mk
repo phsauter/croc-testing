@@ -51,4 +51,11 @@ or_clean:
 	rm -rf $(OR_OUT) 
 	rm -f $(PROJ_NAME).log
 
-.PHONY: backend openroad or_clean
+start_openroad:
+	cd $(OR_DIR) && \
+	PROJ_NAME="$(PROJ_NAME)" \
+	SAVE="$(SAVE)" \
+	REPORTS="$(REPORTS)" \
+	$(OPENROAD) scripts/startup.tcl
+
+.PHONY: backend openroad or_clean start_openroad
