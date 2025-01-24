@@ -48,7 +48,7 @@ proc load_checkpoint_def { checkpoint_name } {
     global save_dir
     utl::report "Loading checkpoint $checkpoint_name"
     set checkpoint ${save_dir}/${checkpoint_name}
-    
+
     exec unzip ${checkpoint}.zip -d ${save_dir}
     read_verilog ${checkpoint}/$checkpoint_name.v
     read_def ${checkpoint}/$checkpoint_name.def

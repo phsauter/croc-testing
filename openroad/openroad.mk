@@ -48,7 +48,7 @@ $(OR_OUT_FILES): $(NETLIST) $(OR_DIR)/scripts/*.tcl $(OR_DIR)/src/*.tcl $(OR_DIR
 or_clean:
 	rm -rf $(SAVE)
 	rm -rf $(REPORTS)
-	rm -rf $(OR_OUT) 
+	rm -rf $(OR_OUT)
 	rm -f $(PROJ_NAME).log
 
 start_openroad:

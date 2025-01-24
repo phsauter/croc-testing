@@ -272,7 +272,7 @@ proc generate_image { area resolution controls file } {
   eval $cmd
 }
 
-proc default_view { } { 
+proc default_view { } {
   set controls ""
   lappend controls [list "*"                       false]
   lappend controls [list "Layers/*"                true ]
