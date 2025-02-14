@@ -8,7 +8,6 @@ name: Backend
 
 on:
   workflow_call:
-    secrets: inherit
 
 jobs:
   backend:
