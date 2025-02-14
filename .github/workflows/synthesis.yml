@@ -1,0 +1,32 @@
+# Copyright (c) 2025 ETH Zurich and University of Bologna.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+# Author:  Philippe Sauter <phsauter@iis.ee.ethz.ch>
+
+name: Synthesis
+
+on:
+  workflow_call:
+    secrets: inherit
+
+jobs:
+  synthesis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set UID and GID for docker-compose
+        run: |
+          echo "UID=$(id -u)" >> $GITHUB_ENV
+          echo "GID=$(id -g)" >> $GITHUB_ENV
+
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: docker-image
+          path: /tmp
+
+      - name: Load Docker image
+        run: docker load -i /tmp/docker-compose-image.tar
+
+      - name: Run synthesis command using docker-compose
+        run: docker-compose run pulp-docker /bin/bash -c "make yosys"

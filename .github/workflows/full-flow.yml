@@ -1,0 +1,27 @@
+# Copyright (c) 2025 ETH Zurich and University of Bologna.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+# Author:  Philippe Sauter <phsauter@iis.ee.ethz.ch>
+
+name: Full Flow
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  oseda-setup:
+    uses: ./.github/workflows/oseda-setup.yml
+
+  simulation:
+    needs: oseda-setup
+    uses: ./.github/workflows/simulation.yml
+
+  synthesis:
+    needs: oseda-setup
+    uses: ./.github/workflows/synthesis.yml
+
+  backend:
+    needs: synthesis
+    uses: ./.github/workflows/backend.yml
