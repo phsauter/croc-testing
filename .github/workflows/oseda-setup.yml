@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository (with submodules)
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Restore Docker image cache
         id: restore-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/docker-compose-image.tar
           key: ${{ runner.os }}-docker-compose-${{ hashFiles('docker-compose.yml') }}
@@ -46,7 +46,7 @@ jobs:
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
 
       - name: Upload Docker image artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: /tmp/docker-compose-image.tar
