@@ -5,8 +5,6 @@
 # Authors:
 # - Philippe Sauter <phsauter@iis.ee.ethz.ch>
 
-version: '3'
-
 services:
   pulp-docker:
     image: hpretl/iic-osic-tools:2024.10

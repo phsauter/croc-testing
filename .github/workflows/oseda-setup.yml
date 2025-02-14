@@ -35,10 +35,11 @@ jobs:
       - name: Get image name from docker-compose
         id: get-image
         run: |
+          echo "UID=$(id -u)" >> $GITHUB_ENV
+          echo "GID=$(id -g)" >> $GITHUB_ENV
           # Extract the first "image:" entry from the resolved docker-compose config.
-          IMAGE=$(docker-compose config | awk '/image:/{print $2}' | head -n1)
+          IMAGE=$(docker compose config | awk '/image:/{print $2}' | head -n1)
           echo "IMAGE_NAME=$IMAGE" >> $GITHUB_ENV
-          echo "Image found: $IMAGE"
       
       - name: Save Docker image for caching and downstream use
         run: docker save $IMAGE_NAME -o /tmp/docker-compose-image.tar
