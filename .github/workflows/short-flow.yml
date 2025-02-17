@@ -12,7 +12,7 @@ jobs:
   oseda-caching:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository (with submodules)
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: "Cache OSEDA image"
