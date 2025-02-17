@@ -24,6 +24,7 @@ runs:
   using: 'composite'
   steps:
     - name: Set up Docker environment
+      shell: bash
       run: |
         echo "UID=$(id -u)" >> $GITHUB_ENV
         echo "GID=$(id -g)" >> $GITHUB_ENV
@@ -37,6 +38,7 @@ runs:
         path: /tmp
 
     - name: Load or pull Docker image
+      shell: bash
       run: |
         if [ -f "/tmp/${{ inputs.artifact_name }}.tar.gz" ]; then
           docker import /tmp/${{ inputs.artifact_name }}.tar.gz
@@ -45,9 +47,8 @@ runs:
         else
           docker compose pull
         fi
-      shell: bash
-
     - name: Determine service name if not provided
+      shell: bash
       run: |
         if [ -z "${{ inputs.service_name }}" ]; then
           SERVICE_NAME=$(docker-compose config --services | head -n 1)
@@ -55,7 +56,7 @@ runs:
         else
           echo "service_name=${{ inputs.service_name }}" >> $GITHUB_ENV
         fi
-      shell: bash
 
     - name: Run commands in OSEDA container
+      shell: bash
       run: docker compose run ${{ env.service_name }} /bin/bash -c "${{ inputs.cmd }}"

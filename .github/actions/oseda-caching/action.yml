@@ -18,6 +18,7 @@ runs:
   steps:
     - name: Get image name from docker-compose
       id: get-image
+      shell: bash
       run: |
         echo "UID=$(id -u)" >> $GITHUB_ENV
         echo "GID=$(id -g)" >> $GITHUB_ENV
@@ -32,10 +33,12 @@ runs:
         key: docker-compose-${{ hashFiles('docker-compose.yml') }}
 
     - name: Load cached Docker image
+      shell: bash
       if: steps.restore-cache.outputs.cache-hit == 'true'
       run: docker import /tmp/${{ inputs.artifact-name }}.tar.gz
 
     - name: Prepare Docker image for caching
+      shell: bash
       if: steps.restore-cache.outputs.cache-hit != 'true'
       run: |
         docker compose pull
