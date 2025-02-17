@@ -42,7 +42,7 @@ jobs:
           path: ${{ env.result_log }}
       - name: Check simulation output
         shell: bash
-        run: ./scripts/check_sim.sh ${{ env.result_log }}
+        run: ./.github/scripts/check_sim.sh ${{ env.result_log }}
 
   synthesis:
     runs-on: ubuntu-latest
