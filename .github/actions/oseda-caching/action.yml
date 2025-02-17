@@ -30,8 +30,8 @@ runs:
       shell: bash
       run: |
         df -h
-        df -h /tmp
-        df -h /var/lib/docker
+        du -h /tmp
+        du -h /var/lib/docker
 
     - name: Load cached Docker image
       shell: bash
@@ -44,8 +44,8 @@ runs:
       run: |
         docker compose pull
         df -h
-        df -h /tmp
-        df -h /var/lib/docker
+        du -h /tmp
+        du -h /var/lib/docker
         docker save $IMAGE_NAME | pigz -9 -f > /tmp/oseda.tar.gz
         df -h
 
