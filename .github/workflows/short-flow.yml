@@ -10,13 +10,8 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   oseda-caching:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    uses: ./.github/workflows/oseda-caching.yml
 
-      - name: "Cache OSEDA image"
-        uses: ./.github/actions/oseda-caching
 
   simulation:
     needs: oseda-caching

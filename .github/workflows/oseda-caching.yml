@@ -1,0 +1,54 @@
+# Copyright (c) 2025 ETH Zurich and University of Bologna.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+# Author:  Philippe Sauter <phsauter@iis.ee.ethz.ch>
+
+name: OSEDA Caching
+
+on:
+  workflow_call:
+
+jobs:
+  oseda-caching:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Get image name from docker-compose
+        id: get-image
+        run: |
+          echo "UID=$(id -u)" >> $GITHUB_ENV
+          echo "GID=$(id -g)" >> $GITHUB_ENV
+          # Extract the first "image:" entry from the resolved docker-compose config.
+          IMAGE=$(docker compose config | awk '/image:/{print $2}' | head -n1)
+          echo "IMAGE_NAME=$IMAGE" >> $GITHUB_ENV
+
+      - name: Restore Docker image cache
+        id: restore-cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/oseda-image.tar.gz
+          key: docker-compose-${{ hashFiles('docker-compose.yml') }}
+
+      - name: Load cached Docker image
+        if: steps.restore-cache.outputs.cache-hit == 'true'
+        run: docker import /tmp/oseda-image.tar.gz
+
+      - name: Prepare Docker image for caching
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        run: |
+          docker compose pull
+          docker save $IMAGE_NAME | pigz -f > /tmp/oseda-image.tar.gz
+        env:
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+
+      - name: Upload Docker image artifact
+        if: steps.restore-cache.outputs.cache-hit != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: oseda-image
+          path: /tmp/oseda-image.tar.gz
