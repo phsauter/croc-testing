@@ -40,8 +40,9 @@ runs:
       if: steps.restore-cache.outputs.cache-hit != 'true'
       run: |
         docker compose pull
-        docker system prune -af
-        docker save $IMAGE_NAME | pigz -f > /tmp/oseda.tar.gz
+        df -h
+        docker save $IMAGE_NAME | pigz -9 -f > /tmp/oseda.tar.gz
+        df -h
 
     - name: Check disk usage
       shell: bash
