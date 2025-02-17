@@ -17,4 +17,5 @@ services:
     stdin_open: true
     tty: true
     working_dir: /fosic/designs/croc
-    entrypoint: /bin/bash
+    entrypoint: /dockerstartup/scripts/ui_startup.sh
+    command: --skip bash

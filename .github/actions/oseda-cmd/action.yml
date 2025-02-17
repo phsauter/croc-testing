@@ -71,4 +71,4 @@ runs:
       shell: bash
       run: |
         docker compose up -d
-        docker compose exec ${{ env.service_name }} bash -c "${{ inputs.cmd }}"
+        docker compose exec ${{ env.service_name }} bash -c "source ~/.bashrc; ${{ inputs.cmd }}"
