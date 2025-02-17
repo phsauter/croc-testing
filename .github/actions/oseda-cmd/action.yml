@@ -23,11 +23,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout repository (with submodules)
-      uses: actions/checkout@v4
-      with:
-        submodules: true
-
     - name: Set up Docker environment
       run: |
         echo "UID=$(id -u)" >> $GITHUB_ENV

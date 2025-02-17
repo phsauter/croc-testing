@@ -12,6 +12,9 @@ jobs:
   oseda-caching:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+
       - name: "Cache OSEDA image"
         uses: ./.github/actions/oseda-caching
 
@@ -19,6 +22,11 @@ jobs:
     needs: oseda-caching
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
       - name: Run simulation commands in OSEDA
         uses: ./.github/actions/oseda-cmd
         with:
@@ -28,6 +36,11 @@ jobs:
     needs: oseda-caching
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
       - name: Setup OSEDA container
         uses: ./.github/actions/oseda-cmd
         with:
