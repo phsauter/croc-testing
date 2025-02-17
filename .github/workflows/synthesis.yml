@@ -25,7 +25,7 @@ jobs:
           path: /tmp
 
       - name: Load Docker image
-        run: docker load -i /tmp/docker-compose-image.tar.gz
+        run: docker load -i /tmp/oseda-image.tar.gz
 
       - name: Run synthesis command using docker-compose
         run: docker-compose run pulp-docker /bin/bash -c "make yosys"
