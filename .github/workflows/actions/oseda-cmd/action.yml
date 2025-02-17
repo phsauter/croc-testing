@@ -1,0 +1,66 @@
+# Copyright (c) 2025 ETH Zurich and University of Bologna.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+# Author:  Philippe Sauter <phsauter@iis.ee.ethz.ch>
+
+name: 'OSEDA Command Action'
+description: 'Sets up OSEDA environment and runs commands in a Docker container'
+
+inputs:
+  cmd:
+    description: 'Command to run in the OSEDA container'
+    required: true
+  artifact_name:
+    description: 'Name of the artifact to download (default: oseda-image)'
+    required: false
+    default: 'oseda-image'
+  service_name:
+    description: 'Name of the Docker service (default: from ./docker-compose.yml)'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repository (with submodules)
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Set up Docker environment
+      run: |
+        echo "UID=$(id -u)" >> $GITHUB_ENV
+        echo "GID=$(id -g)" >> $GITHUB_ENV
+
+    - name: Download Docker image artifact
+      id: download_artifact
+      continue-on-error: true
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.artifact_name }}
+        path: /tmp
+
+    - name: Load or pull Docker image
+      run: |
+        if [ -f "/tmp/${{ inputs.artifact_name }}.tar.gz" ]; then
+          docker import /tmp/${{ inputs.artifact_name }}.tar.gz
+          IMAGE_NAME=$(docker images --format "{{.Repository}}:{{.Tag}}" | head -n 1)
+          echo "Loaded image $IMAGE_NAME from artifacts/cache"
+        else
+          docker compose pull
+        fi
+      shell: bash
+
+    - name: Determine service name if not provided
+      run: |
+        if [ -z "${{ inputs.service_name }}" ]; then
+          SERVICE_NAME=$(docker-compose config --services | head -n 1)
+          echo "service_name=$SERVICE_NAME" >> $GITHUB_ENV
+        else
+          echo "service_name=${{ inputs.service_name }}" >> $GITHUB_ENV
+        fi
+      shell: bash
+
+    - name: Run commands in OSEDA container
+      run: docker compose run ${{ env.service_name }} /bin/bash -c "${{ inputs.cmd }}"

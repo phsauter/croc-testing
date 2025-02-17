@@ -10,22 +10,25 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   oseda-caching:
-    uses: ./.github/workflows/oseda-caching.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Cache OSEDA image"
+        uses: ./.github/actions/oseda-caching
 
   simulation:
     needs: oseda-caching
     runs-on: ubuntu-latest
     steps:
-      - name: Setup OSEDA container
-        uses: ./.github/workflows/oseda-setup.yml
       - name: Run simulation commands in OSEDA
-        run: docker-compose run pulp-docker /bin/bash -c "make sw && make verilator"
+        uses: ./.github/actions/oseda-cmd
+        with:
+          cmd: "make sw && make verilator"
 
   synthesis:
     needs: oseda-caching
     runs-on: ubuntu-latest
     steps:
       - name: Setup OSEDA container
-        uses: ./.github/workflows/oseda-setup.yml
-      - name: Run synthesis commands in OSEDA
-        run: docker-compose run pulp-docker /bin/bash -c "make yosys"
+        uses: ./.github/actions/oseda-cmd
+        with:
+          cmd: "make yosys"
