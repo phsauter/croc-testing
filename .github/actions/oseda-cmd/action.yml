@@ -41,7 +41,6 @@ runs:
         echo "IMAGE_NAME=$IMAGE" >> $GITHUB_ENV
 
     - name: Download Docker image from cache
-      id: download_artifact
       continue-on-error: true
       uses: actions/cache@v4
       with:
