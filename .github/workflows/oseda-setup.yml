@@ -13,45 +13,16 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository (with submodules)
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Restore Docker image cache
-        id: restore-cache
-        uses: actions/cache@v4
-        with:
-          path: /tmp/oseda-image.tar.gz
-          key: docker-compose-${{ hashFiles('docker-compose.yml') }}
-
-      - name: Load cached Docker image
-        if: steps.restore-cache.outputs.cache-hit == 'true'
-        run: |
-          ls -al /tmp/os*
-          pigz -df /tmp/oseda-image.tar.gz > ~/oseda-image.tar
-          ls -al /tmp/os*
-          docker import ~/oseda-image.tar
-
-      - name: Pull image using docker-compose
-        run: docker compose pull
-
-      - name: Get image name from docker-compose
-        id: get-image
+      - name: Set UID and GID for docker-compose
         run: |
           echo "UID=$(id -u)" >> $GITHUB_ENV
           echo "GID=$(id -g)" >> $GITHUB_ENV
-          # Extract the first "image:" entry from the resolved docker-compose config.
-          IMAGE=$(docker compose config | awk '/image:/{print $2}' | head -n1)
-          echo "IMAGE_NAME=$IMAGE" >> $GITHUB_ENV
-      
-      - name: Save Docker image for caching and downstream use
-        run: docker save $IMAGE_NAME | pigz -f > /tmp/oseda-image.tar.gz
-        env:
-          IMAGE_NAME: ${{ env.IMAGE_NAME }}
 
-      - name: Upload Docker image artifact
-        uses: actions/upload-artifact@v4
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
         with:
-          name: docker-image
-          path: /tmp/oseda-image.tar.gz
+          name: oseda-image
+          path: /tmp
+
+      - name: Load Docker image
+        run: docker import /tmp/oseda-image.tar.gz

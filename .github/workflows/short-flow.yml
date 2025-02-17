@@ -9,13 +9,23 @@ name: Short Flow
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  oseda-setup:
-    uses: ./.github/workflows/oseda-setup.yml
+  oseda-caching:
+    uses: ./.github/workflows/oseda-caching.yml
 
   simulation:
-    needs: oseda-setup
-    uses: ./.github/workflows/simulation.yml
+    needs: oseda-caching
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup OSEDA container
+        uses: ./.github/workflows/oseda-setup.yml
+      - name: Run simulation commands in OSEDA
+        run: docker-compose run pulp-docker /bin/bash -c "make sw && make verilator"
 
   synthesis:
-    needs: oseda-setup
-    uses: ./.github/workflows/synthesis.yml
+    needs: oseda-caching
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup OSEDA container
+        uses: ./.github/workflows/oseda-setup.yml
+      - name: Run synthesis commands in OSEDA
+        run: docker-compose run pulp-docker /bin/bash -c "make yosys"
