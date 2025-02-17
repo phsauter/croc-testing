@@ -11,7 +11,7 @@ inputs:
   cmd:
     description: 'Command to run in the OSEDA container'
     required: true
-  artifact_name:
+  image_file_name:
     description: 'Name of the artifact to download (default: oseda-image)'
     required: false
     default: 'oseda-image'
@@ -29,24 +29,35 @@ runs:
         echo "UID=$(id -u)" >> $GITHUB_ENV
         echo "GID=$(id -g)" >> $GITHUB_ENV
 
-    - name: Download Docker image artifact
+    - name: Get image name from docker-compose
+      id: get-image
+      shell: bash
+      run: |
+        IMAGE=$(docker compose config | awk '/image:/{print $2}' | head -n 1)
+        if [ -z "$IMAGE" ]; then
+          echo "ERROR: No image found in docker-compose.yml"
+          exit 1
+        fi
+        echo "IMAGE_NAME=$IMAGE" >> $GITHUB_ENV
+
+    - name: Download Docker image from cache
       id: download_artifact
       continue-on-error: true
-      uses: actions/download-artifact@v4
+      uses: actions/cache@v4
       with:
-        name: ${{ inputs.artifact_name }}
+        key: oseda-${{ env.IMAGE_NAME }}
         path: /tmp
 
     - name: Load or pull Docker image
       shell: bash
       run: |
-        if [ -f "/tmp/${{ inputs.artifact_name }}.tar.gz" ]; then
-          docker import /tmp/${{ inputs.artifact_name }}.tar.gz
-          IMAGE_NAME=$(docker images --format "{{.Repository}}:{{.Tag}}" | head -n 1)
+        if [ -f "/tmp/oseda.tar.gz" ]; then
+          docker import /tmp/oseda.tar.gz
           echo "Loaded image $IMAGE_NAME from artifacts/cache"
         else
           docker compose pull
         fi
+
     - name: Determine service name if not provided
       shell: bash
       run: |
