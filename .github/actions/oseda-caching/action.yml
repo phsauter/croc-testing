@@ -4,48 +4,46 @@
 
 # Author:  Philippe Sauter <phsauter@iis.ee.ethz.ch>
 
-name: OSEDA Caching
+name: 'OSEDA Caching'
+description: 'Cache OSEDA Docker Images'
 
-on:
-  workflow_call:
-    inputs:
-      artifact-name:
-        description: "Name of the Docker image artifact"
-        default: 'oseda-image'
+inputs:
+  artifact-name:
+    description: 'Name of the Docker image artifact'
+    required: true
+    default: 'oseda-image'
 
-jobs:
-  oseda-caching:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get image name from docker-compose
-        id: get-image
-        run: |
-          echo "UID=$(id -u)" >> $GITHUB_ENV
-          echo "GID=$(id -g)" >> $GITHUB_ENV
-          # Extract the first "image:" entry from the resolved docker-compose config.
-          IMAGE=$(docker compose config | awk '/image:/{print $2}' | head -n1)
-          echo "IMAGE_NAME=$IMAGE" >> $GITHUB_ENV
+runs:
+  using: 'composite'
+  steps:
+    - name: Get image name from docker-compose
+      id: get-image
+      run: |
+        echo "UID=$(id -u)" >> $GITHUB_ENV
+        echo "GID=$(id -g)" >> $GITHUB_ENV
+        IMAGE=$(docker compose config | awk '/image:/{print $2}' | head -n1)
+        echo "IMAGE_NAME=$IMAGE" >> $GITHUB_ENV
 
-      - name: Restore Docker image cache
-        id: restore-cache
-        uses: actions/cache@v4
-        with:
-          path: /tmp/${{ inputs.artifact-name }}.tar.gz
-          key: docker-compose-${{ hashFiles('docker-compose.yml') }}
+    - name: Restore Docker image cache
+      id: restore-cache
+      uses: actions/cache@v4
+      with:
+        path: /tmp/${{ inputs.artifact-name }}.tar.gz
+        key: docker-compose-${{ hashFiles('docker-compose.yml') }}
 
-      - name: Load cached Docker image
-        if: steps.restore-cache.outputs.cache-hit == 'true'
-        run: docker import /tmp/${{ inputs.artifact-name }}.tar.gz
+    - name: Load cached Docker image
+      if: steps.restore-cache.outputs.cache-hit == 'true'
+      run: docker import /tmp/${{ inputs.artifact-name }}.tar.gz
 
-      - name: Prepare Docker image for caching
-        if: steps.restore-cache.outputs.cache-hit != 'true'
-        run: |
-          docker compose pull
-          docker save $IMAGE_NAME | pigz -f > /tmp/${{ inputs.artifact-name }}.tar.gz
+    - name: Prepare Docker image for caching
+      if: steps.restore-cache.outputs.cache-hit != 'true'
+      run: |
+        docker compose pull
+        docker save $IMAGE_NAME | pigz -f > /tmp/${{ inputs.artifact-name }}.tar.gz
 
-      - name: Upload Docker image artifact
-        if: steps.restore-cache.outputs.cache-hit != 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.artifact-name }}
-          path: /tmp/${{ inputs.artifact-name }}.tar.gz
+    - name: Upload Docker image artifact
+      if: steps.restore-cache.outputs.cache-hit != 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: /tmp/${{ inputs.artifact-name }}.tar.gz
