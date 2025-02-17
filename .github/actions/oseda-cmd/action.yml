@@ -61,7 +61,7 @@ runs:
       shell: bash
       run: |
         if [ -z "${{ inputs.service_name }}" ]; then
-          SERVICE_NAME=$(docker-compose config --services | head -n 1)
+          SERVICE_NAME=$(docker compose config --services | head -n 1)
           echo "service_name=$SERVICE_NAME" >> $GITHUB_ENV
         else
           echo "service_name=${{ inputs.service_name }}" >> $GITHUB_ENV
