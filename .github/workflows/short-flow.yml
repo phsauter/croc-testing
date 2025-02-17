@@ -21,6 +21,18 @@ jobs:
         uses: ./.github/actions/oseda-cmd
         with:
           cmd: "make sw && make verilator"
+      - name: Upload built software
+        uses: actions/upload-artifact@v3
+        with:
+          name: croc-sw
+          path: sw/bin
+        continue-on-error: true
+      - name: Upload waveform
+        uses: actions/upload-artifact@v3
+        with:
+          name: croc-waveform
+          path: croc.vcd
+        continue-on-error: true
 
   synthesis:
     runs-on: ubuntu-latest
@@ -33,4 +45,16 @@ jobs:
       - name: Setup OSEDA container
         uses: ./.github/actions/oseda-cmd
         with:
-          cmd: "make yosys"
+          cmd: "make yosys && tail -n 40 yosys/reports/*area.rpt"
+      - name: Upload synthesis reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: croc-synth-reports
+          path: yosys/reports
+        continue-on-error: true
+      - name: Upload netlist
+        uses: actions/upload-artifact@v3
+        with:
+          name: croc-netlist
+          path: yosys/out
+        continue-on-error: true
