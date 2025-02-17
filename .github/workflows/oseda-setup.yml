@@ -29,7 +29,8 @@ jobs:
         if: steps.restore-cache.outputs.cache-hit == 'true'
         run: |
           ls -al /tmp/os*
-          pigz -d /tmp/oseda-image.tar.gz > /tmp/oseda-image.tar
+          pigz -df /tmp/oseda-image.tar.gz > /tmp/oseda-image.tar
+          ls -al /tmp/os*
           docker load -i /tmp/oseda-image.tar
 
       - name: Pull image using docker-compose
