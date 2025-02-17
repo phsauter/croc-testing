@@ -71,4 +71,5 @@ runs:
       shell: bash
       run: |
         docker compose up -d
-        docker compose exec ${{ env.service_name }} bash -c "source ~/.bashrc; ${{ inputs.cmd }}"
+        docker compose exec ${{ env.service_name }} bash -c "source ~/.bashrc; ${{ inputs.cmd }}" | tee result.log
+        echo "result_log=$(pwd)/result.log" >> $GITHUB_ENV

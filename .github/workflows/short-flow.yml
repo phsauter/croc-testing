@@ -11,6 +11,7 @@ on: [push, pull_request, workflow_dispatch]
 jobs:
   simulation:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
@@ -34,8 +35,18 @@ jobs:
           path: croc.vcd
         continue-on-error: true
 
+      - name: Upload simulation output
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulation-output
+          path: ${{ env.result_log }}
+      - name: Check simulation output
+        shell: bash
+        run: ./scripts/check_sim.sh ${{ env.result_log }}
+
   synthesis:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
