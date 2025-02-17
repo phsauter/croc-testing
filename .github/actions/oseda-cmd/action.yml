@@ -69,4 +69,6 @@ runs:
 
     - name: Run commands in OSEDA container
       shell: bash
-      run: docker compose run ${{ env.service_name }} /bin/bash -c "${{ inputs.cmd }}"
+      run: |
+        docker compose up -d
+        docker compose exec ${{ env.service_name }} bash -c "${{ inputs.cmd }}"
