@@ -27,6 +27,9 @@ done
 TICK_TIMESTAMP=$(awk '/Tick/ {gsub("ns", "", $1); print $1}' "$LOG_FILE")
 TOCK_TIMESTAMP=$(awk '/Tock/ {gsub("ns", "", $1); print $1}' "$LOG_FILE")
 
+echo "Tick time: ${TICK_TIMESTAMP}"
+echo "Tock time: ${TOCK_TIMESTAMP}"
+
 TIME_DIFF=$((TOCK_TIMESTAMP - TICK_TIMESTAMP))
 TIME_DIFF_MS=$((TIME_DIFF / 1000000))
 
