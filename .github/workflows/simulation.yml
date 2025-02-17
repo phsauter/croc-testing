@@ -25,7 +25,7 @@ jobs:
           path: /tmp
 
       - name: Load Docker image
-        run: docker load -i /tmp/docker-compose-image.tar
+        run: docker load -i /tmp/docker-compose-image.tar.gz
 
       - name: Run simulation commands using docker-compose
         run: docker-compose run pulp-docker /bin/bash -c "make sw && make verilator"
