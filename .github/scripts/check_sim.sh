@@ -17,27 +17,27 @@ expected_lines=(
   "[UART] Tock"
 )
 
-for line in "${EXPECTED_LINES[@]}"; do
+for line in "${expected_lines[@]}"; do
   if ! grep -q "$line" "$LOG_FILE"; then
     echo "Error: Expected line not found in the log: '$line'"
     exit 1
   fi
 done
 
-TICK_TIMESTAMP=$(awk '/Tick/ {gsub("ns", "", $1); print $1}' "$LOG_FILE")
-TOCK_TIMESTAMP=$(awk '/Tock/ {gsub("ns", "", $1); print $1}' "$LOG_FILE")
+tick=$(awk '/Tick/ {gsub("ns", "", $1); print $1}' "$LOG_FILE")
+tock=$(awk '/Tock/ {gsub("ns", "", $1); print $1}' "$LOG_FILE")
 
-echo "Tick time: ${TICK_TIMESTAMP}"
-echo "Tock time: ${TOCK_TIMESTAMP}"
+echo "Tick time: ${tick}"
+echo "Tock time: ${tock}"
 
-TIME_DIFF=$((TOCK_TIMESTAMP - TICK_TIMESTAMP))
-TIME_DIFF_MS=$((TIME_DIFF / 1000000))
+time_diff=$(echo "scale=6; ($tock - $tick) / 1000000" | bc)
+time_diff_ms=$(echo "$time_diff" | awk '{printf "%.2f", $1}')
 
 # 1ms tolerance
-if ((TIME_DIFF_MS >= 9 && TIME_DIFF_MS <= 11)); then
-  echo "Timer correct: The gap between Tick and Tock is approximately 10ms: ${TIME_DIFF_MS}ms."
+if ((time_diff_ms >= 9 && time_diff_ms <= 11)); then
+  echo "Timer correct: The gap between Tick and Tock is approximately 10ms: ${time_diff_ms}ms."
 else
-  echo "Timer Error: The gap between Tick and Tock is not approximately 10ms: ${TIME_DIFF_MS}ms."
+  echo "Timer Error: The gap between Tick and Tock is not approximately 10ms: ${time_diff_ms}ms."
   exit 1
 fi
 
