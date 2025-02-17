@@ -28,10 +28,7 @@ runs:
 
     - name: Check disk usage
       shell: bash
-      run: |
-        df -h
-        du -h /tmp
-        du -h /var/lib/docker
+      run: df -h
 
     - name: Load cached Docker image
       shell: bash
@@ -42,10 +39,9 @@ runs:
       shell: bash
       if: steps.restore-cache.outputs.cache-hit != 'true'
       run: |
+        docker system prune -af
         docker compose pull
         df -h
-        du -h /tmp
-        du -h /var/lib/docker
         docker save $IMAGE_NAME | pigz -9 -f > /tmp/oseda.tar.gz
         df -h
 
