@@ -31,9 +31,9 @@ echo "Tick time: ${tick}"
 echo "Tock time: ${tock}"
 
 time_diff=$(echo "scale=2; ($tock - $tick) / 1000000" | bc)
-time_diff_ms=$(echo "scale=0; $time_diff" | bc)
+time_diff_ms=$(printf "%.0f" $time_diff)
 
-# 1ms tolerance
+# 1.5ms tolerance
 if ((time_diff_ms >= 9 && time_diff_ms <= 11)); then
   echo "Timer correct: The gap between Tick and Tock is approximately 10ms: ${time_diff}ms."
 else
