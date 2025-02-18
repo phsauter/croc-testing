@@ -8,13 +8,13 @@
 LOG_FILE=$1
 
 expected_lines=(
-  "[CORE] Start fetching instructions"
-  "[JTAG] Halting hart 0"
-  "[JTAG] Resumed hart 0"
-  "[UART] Hello World!"
-  "[UART] Result: 0x8940, Cycles: 0xBD"
-  "[UART] Tick"
-  "[UART] Tock"
+  "\[CORE\] Start fetching instructions"
+  "\[JTAG\] Halting hart 0"
+  "\[JTAG\] Resumed hart 0"
+  "\[UART\] Hello World!"
+  "\[UART\] Result: 0x8940, Cycles: 0xBD"
+  "\[UART\] Tick"
+  "\[UART\] Tock"
 )
 
 for line in "${expected_lines[@]}"; do
