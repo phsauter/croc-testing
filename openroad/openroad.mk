@@ -41,7 +41,7 @@ $(OR_OUT_FILES): $(NETLIST) $(OR_DIR)/scripts/*.tcl $(OR_DIR)/src/*.tcl $(OR_DIR
 	SAVE="$(SAVE)" \
 	REPORTS="$(REPORTS)" \
 	PDK="$(CROC_ROOT)/ihp13/pdk" \
-	$$(if [ -z "$$DISPLAY" ]; then echo "QT_QPA_PLATFORM=offscreen"; fi) \
+	QT_QPA_PLATFORM=$$(if [ -z "$$DISPLAY" ]; then echo "offscreen"; else echo "$$QT_QPA_PLATFORM"; fi) \
 	$(OPENROAD) scripts/chip.tcl \
 		$$(if [ "$(gui)" = "1" ]; then echo "-gui"; fi) \
 		-log $(PROJ_NAME).log \
