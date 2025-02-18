@@ -18,7 +18,7 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup OSEDA container
+      - name: Run Yosys, OpenROAD and KLayout
         uses: ./.github/actions/oseda-cmd
         with:
           cmd: "make yosys && make openroad && make klayout"
