@@ -28,6 +28,12 @@ jobs:
           name: croc-openroad
           path: openroad/out
         continue-on-error: true
+      - name: Upload openroad reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: croc-openroad
+          path: openroad/reports
+        continue-on-error: true
       - name: Upload gds
         uses: actions/upload-artifact@v4
         with:
