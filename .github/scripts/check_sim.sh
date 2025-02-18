@@ -25,7 +25,7 @@ for line in "${expected_lines[@]}"; do
 done
 
 tick=$(awk '/\[UART\] Tick/ {print $2+0}' "$LOG_FILE")
-tick=$(awk '/\[UART\] Tock/ {print $2+0}' "$LOG_FILE")
+tock=$(awk '/\[UART\] Tock/ {print $2+0}' "$LOG_FILE")
 
 echo "Tick time: ${tick}"
 echo "Tock time: ${tock}"
