@@ -30,14 +30,14 @@ tock=$(awk '/\[UART\] Tock/ {print $2+0}' "$LOG_FILE")
 echo "Tick time: ${tick}"
 echo "Tock time: ${tock}"
 
-time_diff=$(echo "scale=6; ($tock - $tick) / 1000000" | bc)
-time_diff_ms=$(echo "$time_diff" | awk '{printf "%.2f", $1}')
+time_diff=$(echo "scale=2; ($tock - $tick) / 1000000" | bc)
+time_diff_ms=$(echo "scale=0; $time_diff" | bc)
 
 # 1ms tolerance
 if ((time_diff_ms >= 9 && time_diff_ms <= 11)); then
-  echo "Timer correct: The gap between Tick and Tock is approximately 10ms: ${time_diff_ms}ms."
+  echo "Timer correct: The gap between Tick and Tock is approximately 10ms: ${time_diff}ms."
 else
-  echo "Timer Error: The gap between Tick and Tock is not approximately 10ms: ${time_diff_ms}ms."
+  echo "Timer Error: The gap between Tick and Tock is not approximately 10ms: ${time_diff}ms."
   exit 1
 fi
 
