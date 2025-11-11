@@ -122,7 +122,7 @@ yosys clean -purge
 
 # print paths to important instances (hierarchy and naming is final here)
 yosys select -write ${rep_dir}/${top_design}_registers.rpt t:*DFF*
-yosys tee -q -o ${rep_dir}/${top_design}_instances.rpt  select -list "t:RM_IHPSG13_*"
+yosys tee -q -o ${rep_dir}/${top_design}_instances.rpt  select -list "t:tc_sram_impl*"
 yosys tee -q -a ${rep_dir}/${top_design}_instances.rpt  select -list "t:tc_clk*$*"
 
 
@@ -134,7 +134,7 @@ yosys dfflibmap {*}$tech_cells_args
 
 # then perform bit-level optimization and mapping on all combinational clouds in ABC
 # target period (per optimized block/module) in picoseconds
-set period_ps 10000
+set period_ps 1000
 # pre-process abc file (written to tmp directory)
 set abc_comb_script   [processAbcScript scripts/abc-opt.script]
 # call ABC
