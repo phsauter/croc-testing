@@ -32,16 +32,16 @@
 # pad pitch (min)            90.0     90.0
 
 
-make_io_sites -horizontal_site sg13g2_ioSite \
-    -vertical_site sg13g2_ioSite \
-    -corner_site sg13g2_ioSite \
+make_io_sites -horizontal_site IOSite \
+    -vertical_site IOSite \
+    -corner_site IOSite \
     -offset 0 \
     -rotation_horizontal R0 \
     -rotation_vertical R0 \
     -rotation_corner R0
 
-set padD    180; # pad depth (edge to core)
-set padW     80; # pad width (beachfront)
+set padD    130; # pad depth (edge to core)
+set padW     65; # pad width (beachfront)
 
 set chipH  1760; # left/right (height)
 set chipW  1760; # top/bottom (width)
@@ -155,11 +155,11 @@ connect_by_abutment
 # Bondpad integrated into IO cell (or bondpad after OpenROAD):
 # tells OpenROAD which IO-Cell pin is the pad and places the IO-terminal
 # (the internal concept of an IO) ontop of this pin
-# place_io_terminals */pad
+# place_io_terminals */PAD
 
 # Bondpad as seperate cell placed in OpenROAD:
 # place the bonding pad relative to the IO cell
-place_bondpad -bond bondpad_70x70 -offset {5.0 -70.0} pad_*
+place_bondpad -bond bondpad_50x50 -offset {5.0 0.0} pad_*
 
 # remove rows created by via make_io_sites as they are no longer needed
 remove_io_rows

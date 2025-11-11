@@ -61,68 +61,27 @@ set mpgOffset 20; # arbitrary
 ##########################################################################
 ##  SRAM power rings
 ##########################################################################
-proc sram_power { name macro } {
-    global mprWidth mprSpacing mprOffsetX mprOffsetY mpgWidth mpgSpacing mpgOffset
-    # Macro Grid and Rings
-    define_pdn_grid -macro -cells $macro -name ${name}_grid -orient "R0 R180 MY MX" \
-        -grid_over_boundary -voltage_domains {CORE} \
-        -halo {1 1}
-
-    add_pdn_ring -grid ${name}_grid \
-        -layer        {Metal3 Metal4} \
-        -widths       "$mprWidth $mprWidth" \
-        -spacings     "$mprSpacing $mprSpacing" \
-        -core_offsets "$mprOffsetX $mprOffsetY" \
-        -add_connect
-
-    set sram  [[ord::get_db] findMaster $macro]
-    set sramHeight  [ord::dbu_to_microns [$sram getHeight]]
-    set stripe_dist [expr $sramHeight - 2*$mpgOffset - $mpgWidth - $mpgSpacing]
-    utl::report "stripe_dist of $macro: $stripe_dist"
-
-    # for the large macros there is enough space for an additional stripe
-    if {$stripe_dist > 100} {
-        set stripe_dist [expr $stripe_dist/2]
-    }
-
-    add_pdn_stripe -grid ${name}_grid -layer {TopMetal1} -width $mpgWidth -spacing $mpgSpacing \
-                   -pitch $stripe_dist -offset $mpgOffset -extend_to_core_ring -starts_with POWER -snap_to_grid
-
-    # Connection of Macro Power Ring to standard-cell rails
-    add_pdn_connect -grid ${name}_grid -layers {Metal3 Metal1}
-    # Connection of Stripes on Macro to Macro Power Ring
-    add_pdn_connect -grid ${name}_grid -layers {TopMetal1 Metal3}
-    add_pdn_connect -grid ${name}_grid -layers {TopMetal1 Metal4}
-    # Connection of Stripes on Macro to Macro Power Pins
-    # add_pdn_connect -grid ${name}_grid -layers {TopMetal1 Metal4}
-    # Connection of Stripes on Macro to Core Power Stripes
-    add_pdn_connect -grid ${name}_grid -layers {TopMetal2 TopMetal1}
-}
-
 
 ##########################################################################
 ##  Core Power
 ##########################################################################
 # Top 1 - Top 2
 add_pdn_ring -grid {core_grid} \
-   -layer        {TopMetal1 TopMetal2} \
+   -layer        {MET5 T4M2} \
    -widths       "$pgcrWidth $pgcrWidth" \
    -spacings     "$pgcrSpacing $pgcrSpacing" \
    -pad_offsets  "6 6" \
-   -add_connect                        \
-   -connect_to_pads                    \
-   -connect_to_pad_layers TopMetal2
+   -add_connect        \
+   -connect_to_pads
 
 # M1 Standardcell Rows (tracks)
-add_pdn_stripe -grid {core_grid} -layer {Metal1} -width {0.44} -offset {0} \
+add_pdn_stripe -grid {core_grid} -layer {MET1} -width {0.09} -offset {0} \
                -followpins -extend_to_core_ring
 
 
-sram_power "sram_256x64"  "RM_IHPSG13_1P_256x64_c2_bm_bist"
-
 # Top power grid
 # Top 2 Stripe
-add_pdn_stripe -grid {core_grid} -layer {TopMetal2} -width $tpg2Width \
+add_pdn_stripe -grid {core_grid} -layer {T4M2} -width $tpg2Width \
                -pitch $tpg2Pitch -spacing $tpg2Spacing -offset $tpg2Offset \
                -extend_to_core_ring -snap_to_grid -number_of_straps 7
 
@@ -130,13 +89,13 @@ add_pdn_stripe -grid {core_grid} -layer {TopMetal2} -width $tpg2Width \
 #  During power grid generation, vias will be added for overlapping power nets and overlapping ground nets."
 # M1 is declared vertical but tracks still horizontal
 # vertical TopMetal2 to below horizonals (M1 has horizontal power tracks)
-add_pdn_connect -grid {core_grid} -layers {TopMetal2 Metal1}
-add_pdn_connect -grid {core_grid} -layers {TopMetal2 Metal2}
-add_pdn_connect -grid {core_grid} -layers {TopMetal2 Metal4}
+add_pdn_connect -grid {core_grid} -layers {T4M2 MET1}
+add_pdn_connect -grid {core_grid} -layers {T4M2 MET2}
+add_pdn_connect -grid {core_grid} -layers {T4M2 MET4}
 # add_pdn_connect -grid {core_grid} -layers {TopMetal2 TopMetal1}
 # power ring to standard cell rails
-add_pdn_connect -grid {core_grid} -layers {Metal3 Metal1}
-add_pdn_connect -grid {core_grid} -layers {Metal3 Metal2}
+add_pdn_connect -grid {core_grid} -layers {MET3 MET1}
+add_pdn_connect -grid {core_grid} -layers {MET3 MET2}
 
 
 ##########################################################################

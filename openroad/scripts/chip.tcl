@@ -53,7 +53,7 @@ set chipW            1760.0
 set chipH            1760.0
 
 # thickness of annular ring for pads (length of a pad)
-set padRing           180.0
+set padRing           130.0
 set coreMargin [expr $padRing + 35]; # space for power ring
 
 utl::report "Initialize Chip"
@@ -85,23 +85,27 @@ utl::report "###################################################################
 
 # set_default_view
 # Set layers used for estimate_parasitics
-set_wire_rc -clock -layer Metal4
-set_wire_rc -signal -layer Metal4
+set_wire_rc -clock  -layer MET3
+set_wire_rc -signal -layer MET3
 # don't touch any clock-tree related nets as
 # repair_timing can insert a 'split0000' buffer which then prevents CTS from running
-set clock_nets [get_nets -of_objects [get_pins -of_objects "*_reg" -filter "name == CLK"]]
+set clock_nets [get_nets -of_objects [get_pins -of_objects "*_reg" -filter "name == CK"]]
 set_dont_touch $clock_nets
 set_dont_use $dont_use_cells
 
 utl::report "Repair tie fanout"
-repair_tie_fanout sg13g2_tielo/L_LO
-repair_tie_fanout sg13g2_tiehi/L_HI
+repair_tie_fanout TIEHIH7R/Z
+repair_tie_fanout TIELOH7R/Z
 
 utl::report "Remove buffers"
 remove_buffers
 
-utl::report "Repair design"
-repair_design -verbose
+# utl::report "Repair design"
+# buffer_ports -outputs -buffer_cell BUFX8H7R
+# buffer_ports -inputs  -buffer_cell BUFX8H7R
+# repair_design -verbose
+
+# set_dont_touch [get_cells -hier -filter "ref_name =~ P65_1233_PBMUX*"]
 
 save_checkpoint ${log_id_str}_${proj_name}.pre_place
 
@@ -117,11 +121,11 @@ utl::report "###################################################################
 
 set_thread_count 8
 
-set GPL_ARGS {  -density 0.60 }
+set GPL_ARGS {  -density 0.70 }
 
-set GPL2_ARGS { -density 0.60
+set GPL2_ARGS { -density 0.70
                 -routability_driven
-                -routability_check_overflow 0.30
+                -routability_check_overflow 0.35
                 -timing_driven }
 # density:            In every part of the chip, about N% of the area is occupied by standard cells
 # routability_driven: Reduce density target when there are a lot of wires in an area
@@ -196,10 +200,8 @@ utl::report "Repair clock inverters"
 repair_clock_inverters
 
 utl::report "Clock Tree Synthesis"
-set_wire_rc -clock -layer Metal4
 clock_tree_synthesis -buf_list $ctsBuf -root_buf $ctsBufRoot \
                      -sink_clustering_enable \
-                     -obstruction_aware \
                      -balance_levels
 
 # Repair wire length between clock pad and clock-tree root
@@ -250,9 +252,7 @@ utl::report "###################################################################
 # eventually needs M4/M5 it may struggle with finding space
 # to place vias down to M2/M3 -> reserve some space on M2/M3
 # Reduce TM1 to avoid too much routing there (bigger tracks -> bad for routing)
-set_global_routing_layer_adjustment Metal2-Metal3 0.30
-set_global_routing_layer_adjustment TopMetal1 0.20
-set_routing_layers -signal Metal2-TopMetal1 -clock Metal2-TopMetal1
+set_routing_layers -signal MET1-RDL -clock MET1-RDL
 
 utl::report "Global route"
 global_route -guide_file ${report_dir}/${log_id_str}_${proj_name}_route.guide \
@@ -309,8 +309,8 @@ repair_antennas -ratio_margin 30 -iterations 5
 utl::report "Detailed route"
 set_thread_count 8
 detailed_route -output_drc ${report_dir}/${log_id_str}_${proj_name}_route_drc.rpt \
-               -bottom_routing_layer Metal2 \
-               -top_routing_layer TopMetal1 \
+               -bottom_routing_layer MET1 \
+               -top_routing_layer T4M2 \
                -droute_end_iter 30 \
                -drc_report_iter_step 5 \
                -save_guide_updates \
