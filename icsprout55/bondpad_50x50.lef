@@ -1,0 +1,22 @@
+VERSION 5.8 ;
+
+MACRO bondpad_50x50
+  CLASS COVER ;
+  ORIGIN 0 0 ;
+  FOREIGN bondpad_50x50 0 0 ;
+  SIZE 50.0 BY 50.0 ;
+  SYMMETRY X Y R90 ;
+  SITE IOSite ;
+  PIN pad
+    USE SIGNAL ;
+    PORT
+      LAYER T4M2 ;
+        RECT 0 0 50.0 50.0 ;
+    END
+  END pad
+
+  OBS
+    LAYER T4M2 ;
+      RECT 0 0 50.0 50.0 ;
+  END
+END bondpad_50x50

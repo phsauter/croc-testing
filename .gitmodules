@@ -1,3 +1,6 @@
 [submodule "ihp13/pdk"]
 	path = ihp13/pdk
 	url = https://github.com/IHP-GmbH/IHP-Open-PDK
+[submodule "icsprout55/pdk"]
+	path = icsprout55/pdk
+	url = git@github.com:phsauter/icsprout55-pdk.git
