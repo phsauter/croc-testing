@@ -117,7 +117,7 @@ verilator: verilator/obj_dir/Vtb_croc_soc
 # Bender manages the different IPs and can be used to generate file-lists for synthesis
 TOP_DESIGN     ?= croc_chip
 DUT_DESIGN	   ?= croc_soc
-BENDER_TARGETS ?= asic ihp13 rtl synthesis
+BENDER_TARGETS ?= asic icsprout55 rtl synthesis
 SV_DEFINES     ?= VERILATOR SYNTHESIS COMMON_CELLS_ASSERTS_OFF
 
 ## Generate croc.flist used to read design in yosys
