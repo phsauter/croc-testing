@@ -6,12 +6,12 @@
 # - Philippe Sauter <phsauter@iis.ee.ethz.ch>
 
 # Tools
-BENDER	  ?= bender
-PYTHON3   ?= python3
-VERILATOR ?= /foss/tools/bin/verilator
-YOSYS     ?= yosys
-OPENROAD  ?= openroad
-KLAYOUT   ?= klayout
+BENDER	  ?= /home/phsauter/oseda -2025.03 bender
+PYTHON3   ?= /home/phsauter/oseda -2025.03 python3
+VERILATOR ?= /home/phsauter/oseda -2025.03 verilator
+YOSYS     ?= /home/phsauter/oseda -2025.03 yosys
+OPENROAD  ?= /home/phsauter/oseda -2025.03 openroad
+KLAYOUT   ?= /home/phsauter/oseda -2025.03 klayout
 VSIM      ?= vsim
 REGGEN    ?= $(PYTHON3) $(shell $(BENDER) path register_interface)/vendor/lowrisc_opentitan/util/regtool.py
 
@@ -26,16 +26,27 @@ default: help
 # Dependencies #
 ################
 # Download RCX file used for parasitic extraction from ORFS (configuration got ok by IHP)
-IHP_RCX_URL  := "https://raw.githubusercontent.com/The-OpenROAD-Project/OpenROAD-flow-scripts/7747f88f70daaeb63f43ce36e71829707b7e3fa7/flow/platforms/ihp-sg13g2/IHP_rcx_patterns.rules"
-IHP_RCX_FILE := $(PROJ_DIR)/openroad/IHP_rcx_patterns.rules
+#IHP_RCX_URL  := "https://raw.githubusercontent.com/The-OpenROAD-Project/OpenROAD-flow-scripts/7747f88f70daaeb63f43ce36e71829707b7e3fa7/flow/platforms/ihp-sg13g2/IHP_rcx_patterns.rules"
+#IHP_RCX_FILE := $(PROJ_DIR)/openroad/IHP_rcx_patterns.rules
 
 ## Checkout/update dependencies using Bender
-checkout: $(IHP_RCX_FILE)
+checkout:
 	$(BENDER) checkout
 	git submodule update --init --recursive
 
-$(IHP_RCX_FILE): 
-	curl -L -o $@ $(IHP_RCX_URL)
+
+PDK_READY := $(PROJ_DIR)/icsprout55/pdk/.ready
+PDK_LIB   := $(PROJ_DIR)/icsprout55/pdk/IP/STD_cell/ics55_LLSC_H7C_V1p10C100/liberty
+# Ensure PDK is ready
+include $(PDK_READY)
+
+$(PDK_READY):
+	@mkdir -p $(dir $@)
+	$(MAKE) -C icsprout55/pdk unzip
+	@touch $@
+
+# $(IHP_RCX_FILE): 
+# 	curl -L -o $@ $(IHP_RCX_URL)
 
 ## Reset dependencies (without updating Bender.lock)
 clean-deps:
