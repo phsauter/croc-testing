@@ -25,6 +25,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Free disk space
+        uses: ./.github/actions/free-space
       - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
         with:
