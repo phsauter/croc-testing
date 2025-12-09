@@ -20,7 +20,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-
+      - name: Free disk space
+        uses: ./.github/actions/free-space
       - name: Run simulation commands in OSEDA
         uses: ./.github/actions/oseda-cmd
         with:
@@ -55,7 +56,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-
+      - name: Free disk space
+        uses: ./.github/actions/free-space
       - name: Setup OSEDA container
         uses: ./.github/actions/oseda-cmd
         with:
